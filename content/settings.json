@@ -2,7 +2,7 @@
   "show_grants": true,
   "show_courses": true,
   "show_team": true,
-  "show_members": true,
+  "show_members": false,
   "show_projects": true,
   "show_theses": false,
   "show_student_awards": true
