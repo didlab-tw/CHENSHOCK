@@ -1,0 +1,12 @@
+{
+  "published": true,
+  "type": "journal",
+  "year": "2025",
+  "title": "[範例：論文標題，請在後台修改或刪除]",
+  "authors": "[你的姓名]、[共同作者]",
+  "venue": "[期刊名稱]",
+  "volume_pages": "[卷(期)], [頁碼]",
+  "doi": "",
+  "pdf": "",
+  "featured": true
+}

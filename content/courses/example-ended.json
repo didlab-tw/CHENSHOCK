@@ -1,0 +1,30 @@
+{
+  "published": true,
+  "title": "[範例：已結束的課程名稱]",
+  "academic_year": "114",
+  "semester": "第二學期",
+  "level": "研究所",
+  "credits": "3",
+  "schedule": "",
+  "room": "",
+  "status": "已結束",
+  "description": "[這門課的簡介。]",
+  "goals": ["[學習目標一]", "[學習目標二]"],
+  "grading": [],
+  "weeks": [],
+  "lessons": [],
+  "tasks": [],
+  "works": [
+    { "title": "[作品名稱]", "by": "[學生／小組名稱]", "task": "期末專題", "image": "" }
+  ],
+  "evaluation": {
+    "score": "4.6",
+    "scale": "5",
+    "students": "[人數]",
+    "response_rate": "",
+    "items": [
+      { "name": "[評鑑題項，例如 教學內容]", "score": "4.7" }
+    ],
+    "feedback": ["[學生回饋節錄（可選）]"]
+  }
+}

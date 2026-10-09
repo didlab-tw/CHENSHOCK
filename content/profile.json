@@ -1,0 +1,33 @@
+{
+  "name": "[你的姓名]",
+  "title": "[職稱]",
+  "department": "[系所]",
+  "school": "[學校名稱]",
+  "email": "your.name@example.edu.tw",
+  "photo": "",
+  "bio": "[用兩三句話介紹自己：你的研究領域、關心的問題，以及你的教學理念。]",
+  "research_areas": ["[研究領域 1]", "[研究領域 2]", "[研究領域 3]"],
+  "office": "[大樓與房號]",
+  "office_hours": "[時段]",
+  "scholar": "",
+  "orcid": "",
+  "researchgate": "",
+  "lab_intro": "[一段話介紹研究團隊的方向，以及歡迎什麼樣的學生加入。]",
+  "education": [
+    { "period": "[年份]", "degree": "[博士]", "school": "[學校／系所]" },
+    { "period": "[年份]", "degree": "[碩士]", "school": "[學校／系所]" },
+    { "period": "[年份]", "degree": "[學士]", "school": "[學校／系所]" }
+  ],
+  "work": [
+    { "period": "[年份] – 迄今", "title": "[職稱]", "org": "[學校／單位]" },
+    { "period": "[年份] – [年份]", "title": "[職稱]", "org": "[學校／單位]" }
+  ],
+  "service": [
+    { "period": "[年份] – 迄今", "role": "[職務，例如 審稿人]", "org": "[期刊名稱]" },
+    { "period": "[年份] – [年份]", "role": "[職務，例如 理事]", "org": "[學會名稱]" }
+  ],
+  "awards": [
+    { "year": "[年份]", "name": "[獎項名稱]", "org": "[頒發單位]" },
+    { "year": "[年份]", "name": "[獎項名稱]", "org": "[頒發單位]" }
+  ]
+}

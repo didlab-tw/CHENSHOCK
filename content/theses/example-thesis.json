@@ -1,0 +1,15 @@
+{
+  "published": true,
+  "degree": "碩士",
+  "year": "113",
+  "student": "[學生姓名]",
+  "title_zh": "[範例：中文論文題目]",
+  "title_en": "[English Thesis Title]",
+  "department": "[系所名稱]",
+  "advisor": "",
+  "abstract_zh": "[貼上論文的中文摘要。]",
+  "keywords_zh": "[關鍵詞 1]、[關鍵詞 2]、[關鍵詞 3]",
+  "abstract_en": "[Paste the English abstract here.]",
+  "keywords_en": "[keyword 1], [keyword 2], [keyword 3]",
+  "ndltd_url": "https://ndltd.ncl.edu.tw/"
+}

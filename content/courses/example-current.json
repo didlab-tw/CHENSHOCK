@@ -1,0 +1,31 @@
+{
+  "published": true,
+  "title": "[範例：本學期課程名稱]",
+  "academic_year": "115",
+  "semester": "第一學期",
+  "level": "大學部",
+  "credits": "3",
+  "schedule": "[星期／節次]",
+  "room": "[教室]",
+  "status": "進行中",
+  "description": "[兩三句話介紹這門課：要解決什麼問題、學完可以做到什麼。]",
+  "goals": ["[學習目標一]", "[學習目標二]", "[學習目標三]"],
+  "grading": [
+    { "item": "課堂任務", "percent": "40" },
+    { "item": "期末專題", "percent": "40" },
+    { "item": "課堂參與", "percent": "20" }
+  ],
+  "weeks": [
+    { "week": "第 1 週", "topic": "[單元主題]", "activity": "[活動或任務]" },
+    { "week": "第 2 週", "topic": "[單元主題]", "activity": "[活動或任務]" },
+    { "week": "第 3 週", "topic": "[單元主題]", "activity": "[活動或任務]" }
+  ],
+  "lessons": [
+    { "week": "第 2 週", "date": "[日期]", "title": "[單元標題]", "summary": "[這週的教學重點、採用的教學方法，以及學生的反應或你的反思。]", "image": "", "files": [] }
+  ],
+  "tasks": [
+    { "name": "[任務名稱]", "due": "[日期]", "description": "[任務說明：學生要做什麼、要練習什麼能力。]", "format": "[例如 小組簡報]" }
+  ],
+  "works": [],
+  "evaluation": { "score": "", "scale": "5", "students": "", "response_rate": "", "items": [], "feedback": [] }
+}
