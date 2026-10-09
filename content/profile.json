@@ -3,7 +3,7 @@
   "title": "博士後研究員",
   "department": "科技應用與人力資源發展學系",
   "school": "國立臺灣師範大學",
-  "email": "as941414@gmail.com",
+  "email": "as941414@ntnu.edu.tw",
   "bio": "[用兩三句話介紹自己：你的研究領域、關心的問題，以及你的教學理念。]",
   "research_areas": [
     "AI教育",
@@ -11,7 +11,7 @@
     "數位學習",
     "STEAM教育 & 跨領域學習"
   ],
-  "lab_intro": "[一段話介紹研究團隊的方向，以及歡迎什麼樣的學生加入。]",
+  "office": "國立臺灣師範大學機械大樓4F TC412室",
   "education": [
     {
       "period": "[年份]",
