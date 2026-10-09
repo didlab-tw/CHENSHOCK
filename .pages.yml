@@ -5,6 +5,20 @@ media:
   rename: safe
 
 content:
+  - name: settings
+    label: 網站設定（區塊開關）
+    type: file
+    path: content/settings.json
+    format: json
+    fields:
+      - { name: show_grants, label: 顯示「研究計畫」頁, type: boolean, default: true }
+      - { name: show_courses, label: 顯示「歷年授課」頁, type: boolean, default: true }
+      - { name: show_team, label: 顯示「研究團隊」頁, type: boolean, default: true, description: 關閉後，下面四個區塊也都不會出現 }
+      - { name: show_members, label: 研究團隊 › 目前成員, type: boolean, default: true }
+      - { name: show_projects, label: 研究團隊 › 大學部專題, type: boolean, default: true }
+      - { name: show_theses, label: 研究團隊 › 碩博士論文, type: boolean, default: true }
+      - { name: show_student_awards, label: 研究團隊 › 學生得獎紀錄, type: boolean, default: true }
+
   - name: profile
     label: 個人資料與經歷
     type: file
@@ -95,15 +109,41 @@ content:
             - { name: journal, label: 期刊論文 }
             - { name: conference, label: 研討會論文 }
             - { name: book, label: 專書／專章 }
-            - { name: project, label: 研究計畫 }
       - { name: year, label: 年份, type: string, required: true, description: 西元年，例如 2025 }
       - { name: title, label: 標題, type: string, required: true }
       - { name: authors, label: 作者, type: string, description: 依論文上的順序，用「、」分隔 }
-      - { name: venue, label: 期刊／研討會／出版社／補助單位, type: string }
+      - { name: venue, label: 期刊／研討會／出版社, type: string }
       - { name: volume_pages, label: 卷期與頁碼, type: string, description: 選填，例如 12(3), 45–67 }
       - { name: doi, label: DOI 或論文網址, type: string, description: 選填，貼上完整連結 }
       - { name: pdf, label: PDF 檔案, type: file, description: 選填，若期刊允許公開 }
       - { name: featured, label: 顯示在首頁「近期發表」, type: boolean, default: false, description: 首頁最多顯示 3 筆 }
+
+  - name: grants
+    label: 參與研究計畫
+    type: collection
+    path: content/grants
+    format: json
+    filename: "{year}{month}{day}-{hour}{minute}{second}.json"
+    view:
+      fields: [title, start, role]
+      primary: title
+      sort: [start, title]
+      default:
+        sort: start
+        order: desc
+      search: [title, agency, code]
+    fields:
+      - { name: published, label: 公開顯示, type: boolean, default: true, description: 取消勾選就是草稿，不會出現在網站上 }
+      - { name: agency, label: 委辦單位, type: string, required: true, description: 例如 國家科學及技術委員會、教育部 }
+      - { name: title, label: 計畫名稱, type: string, required: true }
+      - { name: code, label: 計畫編號, type: string }
+      - { name: start, label: 執行開始, type: string, required: true, description: 例如 2025/08/01，網站會依開始日期由新到舊排序 }
+      - { name: end, label: 執行結束, type: string, description: 例如 2026/07/31 }
+      - name: role
+        label: 擔任角色
+        type: select
+        options:
+          values: [計畫主持人, 共同主持人, 協同主持人, 協同研究人員, 研究人員, 博士後研究員, 兼任助理, 專任助理]
 
   - name: courses
     label: 歷年授課

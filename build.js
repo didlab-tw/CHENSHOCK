@@ -75,6 +75,9 @@ function copyDir(src, dest) {
 
 // ---------- 讀取資料 ----------
 const profile = readJSON('content/profile.json', {});
+// 網站設定：每個區塊的開關（後台「網站設定」）。沒設定的一律視為開啟。
+const settings = readJSON('content/settings.json', {});
+const on = (key) => settings[key] !== false;
 const team = arr(readJSON('content/team.json', []));
 const studentAwards = arr(readJSON('content/student-awards.json', []));
 const pubs = readCollection('content/publications').sort((a, b) => num(b.year) - num(a.year));
@@ -83,18 +86,36 @@ const courses = readCollection('content/courses').sort((a, b) =>
   num(b.academic_year) - num(a.academic_year) || (semOrder[b.semester] || 0) - (semOrder[a.semester] || 0));
 const projects = readCollection('content/projects').sort((a, b) => num(b.year) - num(a.year));
 const theses = readCollection('content/theses').sort((a, b) => num(b.year) - num(a.year));
+// 日期字串（例如 2024/08/01、2024-8、2024）→ 可排序的數字
+function dateKey(s) {
+  const p = str(s).match(/\d+/g) || [];
+  return (parseInt(p[0] || 0, 10) * 10000) + (parseInt(p[1] || 0, 10) * 100) + parseInt(p[2] || 0, 10);
+}
+const grants = readCollection('content/grants').sort((a, b) => dateKey(b.start) - dateKey(a.start) || dateKey(b.end) - dateKey(a.end));
+
+// 哪些頁面／區塊要顯示
+const SHOW = {
+  courses: on('show_courses'),
+  grants: on('show_grants'),
+  members: on('show_team') && on('show_members') && team.length > 0,
+  projects: on('show_team') && on('show_projects') && projects.length > 0,
+  theses: on('show_team') && on('show_theses') && theses.length > 0,
+  awards: on('show_team') && on('show_student_awards') && studentAwards.length > 0,
+};
+SHOW.team = on('show_team') && (SHOW.members || SHOW.projects || SHOW.theses || SHOW.awards);
 
 const NAME = str(profile.name) || '我的網站';
 const TYPE_LABEL = { journal: '期刊論文', conference: '研討會論文', book: '專書／專章', project: '研究計畫' };
 
 // ---------- 共用版面 ----------
 const NAV = [
-  ['home', '/', '首頁'],
-  ['about', '/about/', '關於我'],
-  ['pubs', '/publications/', '學術發表'],
-  ['courses', '/courses/', '歷年授課'],
-  ['team', '/team/', '研究團隊'],
-];
+  ['home', '/', '首頁', true],
+  ['about', '/about/', '關於我', true],
+  ['pubs', '/publications/', '學術發表', true],
+  ['grants', '/research-projects/', '研究計畫', SHOW.grants],
+  ['courses', '/courses/', '歷年授課', SHOW.courses],
+  ['team', '/team/', '研究團隊', SHOW.team],
+].filter((n) => n[3]);
 
 function layout({ title, active, body, description }) {
   const pageTitle = title ? `${esc(title)}｜${esc(NAME)}` : esc(NAME);
@@ -220,7 +241,7 @@ ${items.map(([id, label], i) => `<a href="#${id}"${i === 0 ? ' class="active"' :
 function homePage() {
   const titleLine = [profile.title, profile.department, profile.school].filter(Boolean).map(esc).join(' · ');
   const areas = arr(profile.research_areas).map((a) => `<span class="chip">${esc(a)}</span>`).join('');
-  const current = courses.filter((c) => c.status !== '已結束');
+  const current = SHOW.courses ? courses.filter((c) => c.status !== '已結束') : [];
   const featured = pubs.filter((p) => p.featured).slice(0, 3);
   const recent = featured.length ? featured : pubs.slice(0, 3);
   const links = [['Google Scholar', profile.scholar], ['ORCID', profile.orcid], ['ResearchGate', profile.researchgate]]
@@ -398,22 +419,22 @@ ${sections.map(([id, label, html]) => `<section id="${id}" class="block" aria-la
 
 // ---------- 研究團隊 ----------
 function teamPage() {
-  const jump = [['members', '目前成員', team.length], ['projects', '大學部專題', projects.length], ['theses', '碩博士論文', theses.length], ['awards', '學生得獎紀錄', studentAwards.length]]
+  const jump = [['members', '目前成員', SHOW.members], ['projects', '大學部專題', SHOW.projects], ['theses', '碩博士論文', SHOW.theses], ['awards', '學生得獎紀錄', SHOW.awards]]
     .filter(([, , n]) => n);
   const body = `${pageHero('RESEARCH TEAM', '研究團隊與學生成果', paras(profile.lab_intro), jump.length ? `<div class="jump">${jump.map(([id, l]) => `<a href="#${id}">${l}</a>`).join('')}</div>` : '')}
 <div class="wrap section stack-lg">
-${team.length ? `<section id="members" class="block" aria-labelledby="mem-h"><h2 id="mem-h">目前成員</h2>
+${SHOW.members ? `<section id="members" class="block" aria-labelledby="mem-h"><h2 id="mem-h">目前成員</h2>
 <div class="grid grid-sm">${team.map((m) => `<div class="card member">${photo(m.photo, m.name, 'avatar')}<div><strong>${esc(m.name)}</strong><span class="accent">${esc(m.level)}</span><span class="muted">${esc(m.topic)}</span></div></div>`).join('')}</div>
 </section>` : ''}
-${projects.length ? `<section id="projects" class="block" aria-labelledby="proj-h"><h2 id="proj-h">大學部專題</h2>
+${SHOW.projects ? `<section id="projects" class="block" aria-labelledby="proj-h"><h2 id="proj-h">大學部專題</h2>
 <p class="muted">每組一列，點進去可看專題介紹、組員分工與成果。</p>
 <div class="list">${projects.map((p) => listLink('/projects/' + p.id + '/', p.year, '專題', 'tag-muted', arr(p.members).map((m) => m.name).join('、'), p.title)).join('')}</div>
 </section>` : ''}
-${theses.length ? `<section id="theses" class="block" aria-labelledby="th-h"><h2 id="th-h">碩博士論文</h2>
+${SHOW.theses ? `<section id="theses" class="block" aria-labelledby="th-h"><h2 id="th-h">碩博士論文</h2>
 <p class="muted">點進去可看論文中英文摘要與臺灣博碩士論文知識加值系統的連結。</p>
 <div class="list">${theses.map((t) => listLink('/theses/' + t.id + '/', t.year, t.degree || '碩士', t.degree === '博士' ? 'tag-solid' : '', t.student, t.title_zh)).join('')}</div>
 </section>` : ''}
-${studentAwards.length ? `<section id="awards" class="block" aria-labelledby="aw-h"><h2 id="aw-h">指導學生得獎紀錄</h2>
+${SHOW.awards ? `<section id="awards" class="block" aria-labelledby="aw-h"><h2 id="aw-h">指導學生得獎紀錄</h2>
 <div class="table-wrap"><table>
 <thead><tr><th scope="col">年份</th><th scope="col">競賽／獎項</th><th scope="col">名次</th><th scope="col">得獎學生</th><th scope="col">作品</th></tr></thead>
 <tbody>${studentAwards.map((a) => `<tr><td class="muted">${esc(a.year)}</td><td><strong>${esc(a.competition)}</strong></td><td>${esc(a.rank)}</td><td>${esc(a.students)}</td><td>${a.work_link ? `<a href="${esc(u(a.work_link))}">${esc(a.work_title || '查看')}</a>` : esc(a.work_title)}</td></tr>`).join('')}</tbody>
@@ -464,6 +485,28 @@ ${str(t.abstract_en) ? `<section class="block divided" lang="en" aria-labelledby
   write(`theses/${t.id}/index.html`, layout({ title: t.title_zh, active: 'team', body, description: t.abstract_zh }));
 }
 
+// ---------- 參與研究計畫 ----------
+function grantsPage() {
+  const roles = [...new Set(grants.map((g) => str(g.role)).filter(Boolean))];
+  const period = (g) => [str(g.start), str(g.end)].filter(Boolean).join(' – ');
+  const body = `${pageHero('RESEARCH PROJECTS', '參與研究計畫')}
+<section class="wrap section" aria-label="研究計畫列表">
+${grants.length && roles.length > 1 ? `<div class="filters" role="group" aria-label="依擔任角色篩選">
+<button type="button" data-filter="all" aria-pressed="true">全部</button>
+${roles.map((r) => `<button type="button" data-filter="${esc(r)}" aria-pressed="false">${esc(r)}</button>`).join('')}
+</div>` : ''}
+${grants.length ? `<ol class="pubs" id="pub-list">${grants.map((g) => `<li class="pub grant" data-type="${esc(g.role)}">
+<span class="grant-period">${esc(period(g))}</span>
+<div class="pub-main">
+<strong class="pub-title">${esc(g.title)}</strong>
+<span class="pub-authors">${esc(g.agency)}${g.code ? `<span class="grant-code">計畫編號：${esc(g.code)}</span>` : ''}</span>
+${g.role ? `<div class="pub-links"><span class="tag">${esc(g.role)}</span></div>` : ''}
+</div>
+</li>`).join('')}</ol>` : '<p class="empty">尚未新增資料。</p>'}
+</section>`;
+  write('research-projects/index.html', layout({ title: '參與研究計畫', active: 'grants', body }));
+}
+
 function notFound() {
   const body = `${pageHero('404', '找不到這個頁面', `<p>頁面可能已經移除或網址有誤。<a href="${u('/')}" style="color:#A9C4F0">回到首頁</a></p>`)}`;
   write('404.html', layout({ title: '找不到頁面', active: '', body }));
@@ -477,11 +520,15 @@ copyDir('media', 'media');
 homePage();
 aboutPage();
 pubsPage();
-coursesPage();
-courses.forEach(coursePage);
-teamPage();
-projects.forEach(projectPage);
-theses.forEach(thesisPage);
+if (SHOW.grants) grantsPage();
+if (SHOW.courses) {
+  coursesPage();
+  courses.forEach(coursePage);
+}
+if (SHOW.team) teamPage();
+if (SHOW.projects) projects.forEach(projectPage);
+if (SHOW.theses) theses.forEach(thesisPage);
 notFound();
 fs.writeFileSync(path.join(OUT, '.nojekyll'), '');
-console.log(`✓ 網站產生完成：${pubs.length} 篇發表、${courses.length} 門課、${projects.length} 個專題、${theses.length} 篇論文`);
+console.log(`✓ 網站產生完成：${pubs.length} 篇發表、${grants.length} 個研究計畫、${courses.length} 門課、${projects.length} 個專題、${theses.length} 篇論文`);
+console.log('  顯示中的區塊：' + Object.keys(SHOW).filter((k) => SHOW[k]).join('、'));
