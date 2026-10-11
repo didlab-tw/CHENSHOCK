@@ -61,26 +61,66 @@
   ],
   "service": [
     {
-      "period": "[年份] – 迄今",
-      "role": "[職務，例如 審稿人]",
-      "org": "[期刊名稱]"
+      "period": "2025",
+      "role": "Peer review",
+      "org": "Journal - Discover Education"
     },
     {
-      "period": "[年份] – [年份]",
-      "role": "[職務，例如 理事]",
-      "org": "[學會名稱]"
+      "period": "2025",
+      "role": "Peer review",
+      "org": " Journal - Multidimensional Culture & Arts"
+    },
+    {
+      "period": "2025",
+      "role": "Peer review",
+      "org": "Journal - Interactive Learning Environments"
+    },
+    {
+      "period": "2025",
+      "role": "Peer review",
+      "org": "Journal - International Journal of Education in Mathematics, Science and Technology"
+    },
+    {
+      "period": "2023",
+      "role": "Peer review",
+      "org": "2023 Global Chinese Conference on Inquiry Learning"
+    },
+    {
+      "period": "2026",
+      "role": "籌備委員/評審委員",
+      "org": "第35屆時報金犢獎"
+    },
+    {
+      "period": "2025",
+      "role": "競賽統籌",
+      "org": "國家太空中心-太空教具設計競賽"
     }
   ],
   "awards": [
     {
-      "year": "[年份]",
-      "name": "[獎項名稱]",
-      "org": "[頒發單位]"
+      "year": "2026",
+      "name": "中華民國斐陶斐榮譽會員",
+      "org": "中華民國斐陶斐"
     },
     {
-      "year": "[年份]",
-      "name": "[獎項名稱]",
-      "org": "[頒發單位]"
+      "year": "2019-2023",
+      "name": "優秀博士生獎勵",
+      "org": "行政院國家科學及技術委員會"
+    },
+    {
+      "year": "2023",
+      "name": "優秀論文",
+      "org": "Global Chinese Conference on Inquiry Learning (GCCIL)"
+    },
+    {
+      "year": "2022",
+      "name": "優秀論文",
+      "org": "2022 TAECT Conferenc"
+    },
+    {
+      "year": "2016",
+      "name": "優秀論文",
+      "org": "Global Chinese Conference on  Computers in Education (GCCCE)"
     }
   ]
 }
