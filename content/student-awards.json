@@ -1,3 +1,9 @@
 [
-  { "year": "2025", "competition": "[競賽名稱]", "rank": "[名次]", "students": "[學生姓名]、[學生姓名]", "work_title": "[作品名稱]", "work_link": "" }
+  {
+    "year": "2025",
+    "competition": "第34屆時報金犢獎",
+    "rank": "入選決賽",
+    "students": "鄭詠心",
+    "work_title": "永慶房屋雇主品牌招募廣告設計獎"
+  }
 ]
