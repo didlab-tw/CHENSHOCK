@@ -272,7 +272,7 @@ ${recent.length ? `<section class="wrap section" aria-labelledby="pub-h">
 
 <section class="contact" id="contact" aria-labelledby="contact-h">
 <div class="wrap contact-inner">
-<div><h2 id="contact-h">聯絡方式</h2><p>歡迎對研究合作、修課或加入團隊有興趣的同學與夥伴來信。</p></div>
+<div><h2 id="contact-h">聯絡方式</h2><p>歡迎各位志同道合之夥伴一同在汪洋的知識海共同努力。</p></div>
 <div class="contact-list">
 ${profile.email ? `<div>Email：<a href="mailto:${esc(profile.email)}">${esc(profile.email)}</a></div>` : ''}
 ${profile.office ? `<div>研究室：${esc(profile.office)}</div>` : ''}
