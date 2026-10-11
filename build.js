@@ -203,14 +203,14 @@ function pubItem(p) {
   ].join('');
   const indexes = many(p.indexes);
   const venue = [str(p.venue), str(p.location), str(p.volume_pages)].filter(Boolean).join(', ');
-  const tags = [p.type || 'other'].concat(indexes.map(tagKey)).join(' ');
+  const tags = p.type || 'other';
   return `<li class="pub" data-tags="${esc(tags)}">
 <span class="pub-year">${esc(p.year)}</span>
 <div class="pub-main">
 <strong class="pub-title">${esc(p.title)}</strong>
 ${p.authors ? `<span class="pub-authors">${esc(p.authors)}</span>` : ''}
 ${venue ? `<span class="pub-venue">${esc(venue)}</span>` : ''}
-<div class="pub-links"><span class="tag tag-${esc(p.type || 'other')}">${esc(TYPE_LABEL[p.type] || '其他')}</span>${indexes.map((i) => `<span class="tag tag-index">${esc(i)}</span>`).join('')}${links}</div>
+<div class="pub-links"><span class="tag tag-${esc(p.type || 'other')}">${esc(TYPE_LABEL[p.type] || '其他')}</span>${indexes.map((i) => `<span class="tag tag-index ${tagKey(i)}">${esc(i)}</span>`).join('')}${links}</div>
 </div>
 </li>`;
 }
@@ -221,13 +221,16 @@ function evalBadge(c) {
   return `<div class="eval-mini"><span>課程評鑑</span><span><strong>${esc(e.score)}</strong> / ${esc(e.scale || '5')}</span></div>`;
 }
 
+const schoolLine = (c) => [str(c.school), str(c.department)].filter(Boolean).join(' ');
+
 function courseCard(c) {
   const ongoing = c.status !== '已結束';
   const meta = [c.level, c.credits ? `${c.credits} 學分` : '', !ongoing && c.evaluation && c.evaluation.students ? `修課 ${c.evaluation.students} 人` : '']
     .filter(Boolean).map(esc).join(' · ');
-  return `<a class="card course-card${ongoing ? ' is-ongoing' : ''}" href="${u('/courses/' + c.id + '/')}">
+  return `<a class="card course-card${ongoing ? ' is-ongoing' : ''}" data-tags="s-${hash(str(c.school))}" href="${u('/courses/' + c.id + '/')}">
 <span class="tag ${ongoing ? 'tag-solid' : 'tag-muted'}">${ongoing ? '進行中' : esc((c.semester || '') + ' · 已結束')}</span>
 <strong class="card-title">${esc(c.title)}</strong>
+${schoolLine(c) ? `<span class="course-school">${esc(schoolLine(c))}</span>` : ''}
 ${meta ? `<span class="muted">${meta}</span>` : ''}
 ${ongoing && (c.schedule || c.room) ? `<span class="muted">${esc([c.schedule, c.room].filter(Boolean).join(' · '))}</span>` : ''}
 ${evalBadge(c)}
@@ -330,15 +333,13 @@ function pubsPage() {
   const count = (pred) => pubs.filter(pred).length;
   const typeFilters = Object.entries(TYPE_LABEL).filter(([k]) => count((p) => p.type === k))
     .map(([k, l]) => [k, l, count((p) => p.type === k)]);
-  const allIndexes = [...new Set(pubs.flatMap((p) => many(p.indexes)))];
-  const indexFilters = allIndexes.map((i) => [tagKey(i), i, count((p) => many(p.indexes).includes(i))]);
-  const filters = [['all', '全部', pubs.length]].concat(typeFilters, indexFilters);
+  const filters = [['all', '全部', pubs.length]].concat(typeFilters);
   const links = [['Google Scholar', profile.scholar], ['ORCID', profile.orcid]].filter(([, h]) => str(h));
   const intro = links.length ? `<p>完整發表紀錄也可在 ${links.map(([l, h]) => `<a href="${esc(u(h))}">${l}</a>`).join(' 與 ')} 查詢。</p>` : '';
   const body = `${pageHero('PUBLICATIONS', '學術發表', intro)}
 <section class="wrap section" aria-label="發表列表">
 ${pubs.length > 0 && filters.length > 2 ? `<div class="filters" role="group" aria-label="篩選發表">
-${filters.map(([k, l, n], i) => `<button type="button" data-filter="${esc(k)}" aria-pressed="${i === 0}"${i > typeFilters.length ? ' class="f-index"' : ''}>${esc(l)}<span class="f-count">${n}</span></button>`).join('')}
+${filters.map(([k, l, n], i) => `<button type="button" data-filter="${esc(k)}" aria-pressed="${i === 0}">${esc(l)}<span class="f-count">${n}</span></button>`).join('')}
 </div>` : ''}
 ${pubs.length ? `<ol class="pubs" id="pub-list">${pubs.map(pubItem).join('')}</ol>` : '<p class="empty">尚未新增資料。</p>'}
 </section>`;
@@ -350,13 +351,19 @@ function coursesPage() {
   const current = courses.filter((c) => c.status !== '已結束');
   const ended = courses.filter((c) => c.status === '已結束');
   const years = [...new Set(ended.map((c) => str(c.academic_year)))];
+  const schools = [...new Set(courses.map((c) => str(c.school)).filter(Boolean))];
+  const filters = schools.length > 1 ? `<div class="filters" role="group" aria-label="依學校篩選">
+<button type="button" data-filter="all" aria-pressed="true">全部學校<span class="f-count">${courses.length}</span></button>
+${schools.map((sc) => `<button type="button" data-filter="s-${hash(sc)}" aria-pressed="false">${esc(sc)}<span class="f-count">${courses.filter((c) => str(c.school) === sc).length}</span></button>`).join('')}
+</div>` : '';
   const body = `${pageHero('TEACHING', '歷年授課', '<p>每門課都有自己的頁面，整理課程大綱、教學內容與學生課堂任務；已結束的課程附上課程評鑑分數。</p>')}
-<div class="wrap section stack-lg">
-${current.length ? `<section aria-labelledby="cur-h" class="block">
+<div class="wrap section stack-lg" id="filter-scope">
+${filters}
+${current.length ? `<section aria-labelledby="cur-h" class="block filter-group">
 <h2 id="cur-h">本學期</h2>
 <div class="grid">${current.map(courseCard).join('')}</div>
 </section>` : ''}
-${years.map((y, i) => `<section aria-labelledby="y${i}-h" class="block">
+${years.map((y, i) => `<section aria-labelledby="y${i}-h" class="block filter-group">
 <h2 id="y${i}-h">${esc(y)} 學年度</h2>
 <div class="grid">${ended.filter((c) => str(c.academic_year) === y).map(courseCard).join('')}</div>
 </section>`).join('\n')}
@@ -424,6 +431,7 @@ ${arr(e.feedback).map((f) => `<blockquote>${esc(f)}</blockquote>`).join('')}`]);
 <div class="wrap course-hero">
 <div class="course-hero-text">
 <a class="back" href="${u('/courses/')}">← 歷年授課</a>
+${schoolLine(c) ? `<span class="hero-school">${esc(schoolLine(c))}</span>` : ''}
 <span class="kicker">${esc([c.academic_year ? c.academic_year + ' 學年度' : '', c.semester, c.level, c.credits ? c.credits + ' 學分' : ''].filter(Boolean).join(' · '))}</span>
 <h1>${esc(c.title)}</h1>
 ${paras(c.description)}
@@ -511,21 +519,39 @@ ${str(t.abstract_en) ? `<section class="block divided" lang="en" aria-labelledby
 }
 
 // ---------- 參與研究計畫 ----------
+function grantRoles(g) {
+  // 新格式：roles = [{ role, from, to }]；舊格式：role = '...'
+  const list = arr(g.roles).filter((r) => str(r.role));
+  if (list.length) return list.map((r) => ({ role: str(r.role), from: str(r.from), to: str(r.to) }));
+  return str(g.role) ? [{ role: str(g.role), from: '', to: '' }] : [];
+}
+
+function grantAgency(g) {
+  const a = str(g.agency);
+  return a === '其他' || !a ? str(g.agency_other) : a;
+}
+
 function grantsPage() {
-  const roles = [...new Set(grants.map((g) => str(g.role)).filter(Boolean))];
-  const period = (g) => [str(g.start), str(g.end)].filter(Boolean).join(' – ');
+  const all = grants.map((g) => Object.assign({}, g, { _roles: grantRoles(g), _agency: grantAgency(g) }));
+  const roles = [...new Set(all.flatMap((g) => g._roles.map((r) => r.role)))];
+  const period = (a, b) => [str(a), str(b)].filter(Boolean).join(' – ');
+  const roleHtml = (rs) => {
+    if (!rs.length) return '';
+    if (rs.length === 1) return `<div class="pub-links"><span class="tag">${esc(rs[0].role)}</span>${rs[0].from || rs[0].to ? `<span class="muted small">${esc(period(rs[0].from, rs[0].to))}</span>` : ''}</div>`;
+    return `<ol class="role-steps" aria-label="擔任角色（依時間）">${rs.map((r) => `<li><span class="tag">${esc(r.role)}</span>${r.from || r.to ? `<span class="role-when">${esc(period(r.from, r.to))}</span>` : ''}</li>`).join('')}</ol>`;
+  };
   const body = `${pageHero('RESEARCH PROJECTS', '參與研究計畫')}
 <section class="wrap section" aria-label="研究計畫列表">
-${grants.length && roles.length > 1 ? `<div class="filters" role="group" aria-label="依擔任角色篩選">
-<button type="button" data-filter="all" aria-pressed="true">全部<span class="f-count">${grants.length}</span></button>
-${roles.map((r) => `<button type="button" data-filter="r-${hash(r)}" aria-pressed="false">${esc(r)}<span class="f-count">${grants.filter((g) => str(g.role) === r).length}</span></button>`).join('')}
+${all.length && roles.length > 1 ? `<div class="filters" role="group" aria-label="依擔任角色篩選">
+<button type="button" data-filter="all" aria-pressed="true">全部<span class="f-count">${all.length}</span></button>
+${roles.map((r) => `<button type="button" data-filter="r-${hash(r)}" aria-pressed="false">${esc(r)}<span class="f-count">${all.filter((g) => g._roles.some((x) => x.role === r)).length}</span></button>`).join('')}
 </div>` : ''}
-${grants.length ? `<ol class="pubs" id="pub-list">${grants.map((g) => `<li class="pub grant" data-tags="r-${hash(str(g.role))}">
-<span class="grant-period">${esc(period(g))}</span>
+${all.length ? `<ol class="pubs" id="pub-list">${all.map((g) => `<li class="pub grant" data-tags="${g._roles.map((r) => 'r-' + hash(r.role)).join(' ')}">
+<span class="grant-period">${esc(period(g.start, g.end))}</span>
 <div class="pub-main">
 <strong class="pub-title">${esc(g.title)}</strong>
-<span class="pub-authors">${esc(g.agency)}${g.code ? `<span class="grant-code">計畫編號：${esc(g.code)}</span>` : ''}</span>
-${g.role ? `<div class="pub-links"><span class="tag">${esc(g.role)}</span></div>` : ''}
+<span class="pub-authors">${esc(g._agency)}${g.code ? `<span class="grant-code">計畫編號：${esc(g.code)}</span>` : ''}</span>
+${roleHtml(g._roles)}
 </div>
 </li>`).join('')}</ol>` : '<p class="empty">尚未新增資料。</p>'}
 </section>`;

@@ -167,16 +167,31 @@ content:
             summary: "{start}｜{title}"
         fields:
             - { name: published, label: 公開顯示, type: boolean, default: true, description: 取消勾選就是草稿，不會出現在網站上 }
-            - { name: agency, label: 委辦單位, type: string, required: true, description: 例如 國家科學及技術委員會、教育部 }
+            - name: agency
+              label: 委辦單位
+              type: select
+              required: true
+              options:
+                values: [國家科學及技術委員會, 教育部, 高等教育深耕計畫, 產學合作, 教學實踐研究計畫, 其他]
+            - { name: agency_other, label: 其他委辦單位, type: string, description: 上面選「其他」時才需要填 }
             - { name: title, label: 計畫名稱, type: string, required: true }
             - { name: code, label: 計畫編號, type: string }
             - { name: start, label: 執行開始, type: string, required: true, description: 例如 2025/08/01，網站會依開始日期由新到舊排序 }
             - { name: end, label: 執行結束, type: string, description: 例如 2026/07/31 }
-            - name: role
+            - name: roles
               label: 擔任角色
-              type: select
-              options:
-                values: [計畫主持人, 共同主持人, 協同主持人, 協同研究人員, 研究人員, 博士後研究員, 兼任助理, 專任助理]
+              description: 一般只要一筆、日期留空。如果中途換身分（例如 2026/7 起改為博士後研究員），就加第二筆並填上各自的起訖日期，網站會依序顯示「協同研究人員 → 博士後研究員」
+              type: object
+              list:
+                min: 1
+              fields:
+                - name: role
+                  label: 角色
+                  type: select
+                  options:
+                    values: [計畫主持人, 共同主持人, 協同主持人, 協同研究人員, 研究人員, 博士後研究員, 兼任助理, 專任助理]
+                - { name: from, label: 此身分開始, type: string, description: 只有一個身分時留空即可 }
+                - { name: to, label: 此身分結束, type: string }
 
   - name: courses
     label: 歷年授課
@@ -191,10 +206,12 @@ content:
         list:
           collapsible:
             collapsed: true
-            summary: "{academic_year} {semester}｜{title}"
+            summary: "{academic_year} {semester}｜{school}｜{title}"
         fields:
             - { name: published, label: 公開顯示, type: boolean, default: true, description: 取消勾選就是草稿 }
             - { name: title, label: 課程名稱, type: string, required: true }
+            - { name: school, label: 學校, type: string, required: true, description: 例如 國立臺灣師範大學 }
+            - { name: department, label: 系所, type: string, description: 例如 科技應用與人力資源發展學系 }
             - { name: academic_year, label: 學年度, type: string, required: true, description: 例如 115 }
             - name: semester
               label: 學期
