@@ -106,18 +106,18 @@ a.card:hover { border-color: #9DB0D0; box-shadow: 0 4px 16px rgba(15, 29, 54, .0
 .tag-journal { background: #DCE6F6; color: #173469; font-weight: 500; }
 .tag-conference { background: #DDF0E6; color: #1A5235; font-weight: 500; }
 .tag-book { background: #F3EAD9; color: #6B4A12; font-weight: 500; }
-/* 收錄類別（SSCI、TSSCI…）：白底彩色框線，跟類型標籤一眼就能分開，各類別顏色不同 */
-.tag-index { --ix: #14213A; background: #fff; color: var(--ix); border: 1.5px solid var(--ix); font-weight: 700; letter-spacing: .02em; padding: 1px 8px; }
-.ix-ssci   { --ix: #A3302B; }   /* 磚紅 */
-.ix-scie, .ix-sci { --ix: #9A4A00; } /* 橘棕 */
-.ix-esci   { --ix: #7A5A00; }   /* 金褐 */
-.ix-ahci   { --ix: #7A2E6E; }   /* 紫紅 */
-.ix-tssci  { --ix: #6A3FA0; }   /* 紫 */
-.ix-thci   { --ix: #4B3B8F; }   /* 靛紫 */
-.ix-ei     { --ix: #1A6B3C; }   /* 綠 */
-.ix-ieee   { --ix: #00629B; }   /* IEEE 藍 */
-.ix-scopus { --ix: #B34700; }   /* 橘 */
-.ix-acm    { --ix: #0E6670; }   /* 藍綠 */
+/* 收錄類別（SSCI、TSSCI…）：實心色塊＋白字，跟淺色的類型標籤一眼分開；每一類顏色差異明顯 */
+.tag-index { --ix: #37474F; background: var(--ix); color: #fff; font-weight: 700; letter-spacing: .03em; padding: 2px 10px; }
+.ix-ssci   { --ix: #C62828; }   /* 紅 */
+.ix-scie, .ix-sci { --ix: #B34200; } /* 橘 */
+.ix-esci   { --ix: #5F6B00; }   /* 橄欖綠 */
+.ix-ahci   { --ix: #5D4037; }   /* 咖啡 */
+.ix-tssci  { --ix: #6A1B9A; }   /* 紫 */
+.ix-thci   { --ix: #AD1457; }   /* 桃紅 */
+.ix-ei     { --ix: #2E7D32; }   /* 綠 */
+.ix-ieee   { --ix: #0D47A1; }   /* 深藍 */
+.ix-scopus { --ix: #00727C; }   /* 藍綠 */
+.ix-acm    { --ix: #37474F; }   /* 灰 */
 /* 歷年授課：學校 */
 .course-school { font-size: 14px; color: var(--tint-ink); font-weight: 500; }
 .hero-school { font-size: 15px; color: #fff; font-weight: 500; }

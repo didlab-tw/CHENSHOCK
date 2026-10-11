@@ -189,7 +189,7 @@ content:
                   label: 角色
                   type: select
                   options:
-                    values: [計畫主持人, 共同主持人, 協同主持人, 協同研究人員, 研究人員, 博士後研究員, 兼任助理, 專任助理]
+                    values: [計畫主持人, 共同主持人, 協同主持人, 協同研究人員, 研究人員, 博士後研究員, 專案經理, 兼任助理, 專任助理]
                 - { name: from, label: 此身分開始, type: string, description: 只有一個身分時留空即可 }
                 - { name: to, label: 此身分結束, type: string }
 
