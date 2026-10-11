@@ -117,7 +117,7 @@ content:
     fields:
       - name: items
         label: 學術發表
-        description: 按右下角「＋」新增一筆；可以連續新增或修改好幾筆，全部完成後再按一次「儲存」
+        description: 可以連續新增或修改好幾筆，全部完成後再按一次「儲存」；點一筆可以展開編輯
         type: object
         list:
           collapsible:
@@ -159,7 +159,7 @@ content:
     fields:
       - name: items
         label: 參與研究計畫
-        description: 按右下角「＋」新增一筆；可以連續新增或修改好幾筆，全部完成後再按一次「儲存」
+        description: 可以連續新增或修改好幾筆，全部完成後再按一次「儲存」；點一筆可以展開編輯
         type: object
         list:
           collapsible:
@@ -186,7 +186,7 @@ content:
     fields:
       - name: items
         label: 歷年授課
-        description: 按右下角「＋」新增一筆；可以連續新增或修改好幾筆，全部完成後再按一次「儲存」
+        description: 可以連續新增或修改好幾筆，全部完成後再按一次「儲存」；點一筆可以展開編輯
         type: object
         list:
           collapsible:
@@ -313,7 +313,7 @@ content:
         fields:
           - name: items
             label: 大學部專題
-            description: 按右下角「＋」新增一筆；可以連續新增或修改好幾筆，全部完成後再按一次「儲存」
+            description: 可以連續新增或修改好幾筆，全部完成後再按一次「儲存」；點一筆可以展開編輯
             type: object
             list:
               collapsible:
@@ -353,7 +353,7 @@ content:
         fields:
           - name: items
             label: 碩博士論文
-            description: 按右下角「＋」新增一筆；可以連續新增或修改好幾筆，全部完成後再按一次「儲存」
+            description: 可以連續新增或修改好幾筆，全部完成後再按一次「儲存」；點一筆可以展開編輯
             type: object
             list:
               collapsible:
