@@ -15,24 +15,26 @@
     "科技化人力資源發展"
   ],
   "office": "國立臺灣師範大學機械大樓4F TC412室",
+  "scholar": "https://scholar.google.com.tw/citations?user=gi8WUtMAAAAJ&hl=zh-TW",
+  "orcid": "https://orcid.org/0000-0001-8045-5977",
   "education": [
     {
       "period": "2026",
       "degree": "[博士]",
       "school": "國立臺灣師範大學科技應用與人力資源發展學系",
-      "thesis": ""
+      "thesis": "應用AMO理論探討幼兒教師STEAM教學行為意圖之研究"
     },
     {
       "period": "2016",
       "degree": "[碩士]",
       "school": "國立臺灣師範大學科技應用與人力資源發展學系",
-      "thesis": ""
+      "thesis": "設計思考模式結合STEM教學在高中生活科技機電整合單元之研究"
     },
     {
       "period": "2014",
       "degree": "[學士]",
       "school": "崑山科技大學資訊傳播系/數位學習科技學程 / 互動多媒體科技學程",
-      "thesis": ""
+      "thesis": "台灣特有蝴蝶互動展示系統之建構"
     }
   ],
   "work": [
@@ -128,26 +130,82 @@
   ],
   "skills": [
     {
-      "category": "[類別，例如 設計與多媒體]",
+      "category": "多媒體應用",
       "items": [
-        "[軟體名稱，例如 Photoshop]",
-        "[軟體名稱]"
+        "Adobe Photoshop",
+        "Adobe Illustrator",
+        "Adobe Premiere",
+        "Adobe Lightroom",
+        "Adobe After Effects",
+        "Adobe Audition",
+        "DaVinci Resolve",
+        "威力導演",
+        "剪映 / CapCut",
+        "AI影片 (Seedance、Google Veo 3)"
       ]
     },
     {
-      "category": "[類別，例如 研究與統計]",
+      "category": "程式語言",
       "items": [
         "[軟體名稱，例如 SPSS]",
-        "[軟體名稱]"
+        "HTML",
+        "CSS",
+        "Python",
+        "Javascript",
+        "SQL",
+        "Vibe Coding"
+      ]
+    },
+    {
+      "category": "STEM教育  / Maker創客",
+      "items": [
+        "電子電路設計",
+        "木工",
+        "雷射切割",
+        "3D列印",
+        "Arduino"
       ]
     }
   ],
   "certifications": [
     {
-      "year": "[年份]",
-      "name": "[證照名稱]",
-      "issuer": "[發證單位]",
-      "number": ""
+      "year": "2015",
+      "name": "SSE攝影國際證照",
+      "issuer": "Silicon Stone Education"
+    },
+    {
+      "year": "2012",
+      "name": "Adobe Photoshop",
+      "issuer": "Adobe  "
+    },
+    {
+      "year": "2011",
+      "name": "電腦硬體裝修乙級",
+      "issuer": "行政院勞動部"
+    },
+    {
+      "year": "2011",
+      "name": "單晶片認證丙級",
+      "issuer": "臺灣嵌入式單晶片系統發展協會",
+      "number": "120-0023177"
+    },
+    {
+      "year": "2010",
+      "name": "電腦硬體裝修丙級",
+      "issuer": "行政院勞動部",
+      "number": "120-0176901"
+    },
+    {
+      "year": "2010",
+      "name": "網路架設丙級",
+      "issuer": "行政院勞動部",
+      "number": "172-0011523"
+    },
+    {
+      "year": "2009",
+      "name": "工業電子丙級",
+      "issuer": "行政院勞動部",
+      "number": "028-0271640"
     }
   ],
   "contact_message": "歡迎各位志同道合之夥伴一同在汪洋的知識海共同努力。"
