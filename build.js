@@ -526,14 +526,22 @@ function grantRoles(g) {
   return str(g.role) ? [{ role: str(g.role), from: '', to: '' }] : [];
 }
 
-function grantAgency(g) {
+// 委辦單位分類（篩選用，依此順序）
+const AGENCY_ORDER = ['高等教育深耕計畫', '教學實踐研究計畫', '產學合作', '國家科學及技術委員會', '教育部'];
+function grantAgencyGroup(g) {
   const a = str(g.agency);
-  return a === '其他' || !a ? str(g.agency_other) : a;
+  return AGENCY_ORDER.includes(a) ? a : '其他';
+}
+// 顯示用：分類＋補充的單位名稱（例如「產學合作｜財團法人工業技術研究院」）
+function grantAgency(g) {
+  const a = str(g.agency), o = str(g.agency_other);
+  if (!a || a === '其他') return o;
+  return o ? a + '｜' + o : a;
 }
 
 function grantsPage() {
   const all = grants.map((g) => Object.assign({}, g, { _roles: grantRoles(g), _agency: grantAgency(g) }));
-  const roles = [...new Set(all.flatMap((g) => g._roles.map((r) => r.role)))];
+  const groups = AGENCY_ORDER.concat(['其他']).filter((a) => all.some((g) => grantAgencyGroup(g) === a));
   const period = (a, b) => [str(a), str(b)].filter(Boolean).join(' – ');
   const roleHtml = (rs) => {
     if (!rs.length) return '';
@@ -542,11 +550,11 @@ function grantsPage() {
   };
   const body = `${pageHero('RESEARCH PROJECTS', '參與研究計畫')}
 <section class="wrap section" aria-label="研究計畫列表">
-${all.length && roles.length > 1 ? `<div class="filters" role="group" aria-label="依擔任角色篩選">
+${all.length && groups.length > 1 ? `<div class="filters" role="group" aria-label="依委辦單位篩選">
 <button type="button" data-filter="all" aria-pressed="true">全部<span class="f-count">${all.length}</span></button>
-${roles.map((r) => `<button type="button" data-filter="r-${hash(r)}" aria-pressed="false">${esc(r)}<span class="f-count">${all.filter((g) => g._roles.some((x) => x.role === r)).length}</span></button>`).join('')}
+${groups.map((a) => `<button type="button" data-filter="a-${hash(a)}" aria-pressed="false">${esc(a)}<span class="f-count">${all.filter((g) => grantAgencyGroup(g) === a).length}</span></button>`).join('')}
 </div>` : ''}
-${all.length ? `<ol class="pubs" id="pub-list">${all.map((g) => `<li class="pub grant" data-tags="${g._roles.map((r) => 'r-' + hash(r.role)).join(' ')}">
+${all.length ? `<ol class="pubs" id="pub-list">${all.map((g) => `<li class="pub grant" data-tags="a-${hash(grantAgencyGroup(g))}">
 <span class="grant-period">${esc(period(g.start, g.end))}</span>
 <div class="pub-main">
 <strong class="pub-title">${esc(g.title)}</strong>
