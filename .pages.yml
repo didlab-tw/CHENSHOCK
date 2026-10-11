@@ -172,7 +172,7 @@ content:
               type: select
               required: true
               options:
-                values: [國家科學及技術委員會, 教育部, 高等教育深耕計畫, 產學合作, 教學實踐研究計畫, 其他]
+                values: [國家科學及技術委員會, 教育部, 高等教育深耕計畫, 教學實踐研究計畫, 產學合作, 其他]
             - { name: agency_other, label: 合作／委辦單位名稱, type: string, description: 選「產學合作」時填合作單位；選「其他」時填委辦單位；其他情況可留空 }
             - { name: title, label: 計畫名稱, type: string, required: true }
             - { name: code, label: 計畫編號, type: string }

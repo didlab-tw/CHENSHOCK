@@ -527,7 +527,7 @@ function grantRoles(g) {
 }
 
 // 委辦單位分類（篩選用，依此順序）
-const AGENCY_ORDER = ['高等教育深耕計畫', '教學實踐研究計畫', '產學合作', '國家科學及技術委員會', '教育部'];
+const AGENCY_ORDER = ['國家科學及技術委員會', '教育部', '高等教育深耕計畫', '教學實踐研究計畫', '產學合作'];
 function grantAgencyGroup(g) {
   const a = str(g.agency);
   return AGENCY_ORDER.includes(a) ? a : '其他';
