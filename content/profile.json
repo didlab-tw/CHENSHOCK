@@ -19,17 +19,20 @@
     {
       "period": "2026",
       "degree": "[博士]",
-      "school": "國立臺灣師範大學科技應用與人力資源發展學系"
+      "school": "國立臺灣師範大學科技應用與人力資源發展學系",
+      "thesis": ""
     },
     {
       "period": "2016",
       "degree": "[碩士]",
-      "school": "國立臺灣師範大學科技應用與人力資源發展學系"
+      "school": "國立臺灣師範大學科技應用與人力資源發展學系",
+      "thesis": ""
     },
     {
       "period": "2014",
       "degree": "[學士]",
-      "school": "崑山科技大學資訊傳播系/數位學習科技學程 / 互動多媒體科技學程"
+      "school": "崑山科技大學資訊傳播系/數位學習科技學程 / 互動多媒體科技學程",
+      "thesis": ""
     }
   ],
   "work": [
@@ -122,5 +125,30 @@
       "name": "優秀論文",
       "org": "Global Chinese Conference on  Computers in Education (GCCCE)"
     }
-  ]
+  ],
+  "skills": [
+    {
+      "category": "[類別，例如 設計與多媒體]",
+      "items": [
+        "[軟體名稱，例如 Photoshop]",
+        "[軟體名稱]"
+      ]
+    },
+    {
+      "category": "[類別，例如 研究與統計]",
+      "items": [
+        "[軟體名稱，例如 SPSS]",
+        "[軟體名稱]"
+      ]
+    }
+  ],
+  "certifications": [
+    {
+      "year": "[年份]",
+      "name": "[證照名稱]",
+      "issuer": "[發證單位]",
+      "number": ""
+    }
+  ],
+  "contact_message": "歡迎各位志同道合之夥伴一同在汪洋的知識海共同努力。"
 }

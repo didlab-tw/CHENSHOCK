@@ -102,6 +102,14 @@ a.card:hover { border-color: #9DB0D0; box-shadow: 0 4px 16px rgba(15, 29, 54, .0
 .tag-solid { background: var(--accent); color: #fff; font-weight: 700; }
 .tag-muted { background: #EAEDF1; color: var(--body); }
 .tag-gold { background: #F3EAD9; color: #6B4A12; }
+/* 發表類型：期刊（藍）、研討會（綠）、專書（棕） */
+.tag-journal { background: #DCE6F6; color: #173469; font-weight: 500; }
+.tag-conference { background: #DDF0E6; color: #1A5235; font-weight: 500; }
+.tag-book { background: #F3EAD9; color: #6B4A12; font-weight: 500; }
+/* 收錄類別（SSCI、TSSCI…）：深色框線，跟類型標籤一眼就能分開 */
+.tag-index { background: #fff; color: var(--dark); border: 1.5px solid var(--dark); font-weight: 700; letter-spacing: .02em; padding: 1px 8px; }
+.row-extra { color: var(--body) !important; font-size: 14px !important; margin-top: 2px; }
+.chips-light .chip { background: var(--tint); color: var(--tint-ink); }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* 清單列（學歷、經歷…） */
@@ -126,6 +134,8 @@ a.card:hover { border-color: #9DB0D0; box-shadow: 0 4px 16px rgba(15, 29, 54, .0
 .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
 .filters button { min-height: 44px; padding: 0 18px; border-radius: 999px; font: inherit; font-size: 14px; cursor: pointer; background: #fff; color: var(--ink); border: 1px solid #B8C3D4; }
 .filters button[aria-pressed="true"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+.filters button.f-index { font-weight: 700; }
+.f-count { display: inline-block; margin-left: 6px; font-size: 12px; opacity: .7; }
 
 /* 側邊目錄（捲動時固定） */
 .with-toc { display: flex; flex-wrap: wrap; gap: 48px; align-items: flex-start; padding-top: 48px; padding-bottom: 88px; }

@@ -19,20 +19,29 @@ function readJSON(file, fallback) {
   }
 }
 
-function readCollection(dir) {
-  const full = path.join(ROOT, dir);
-  if (!fs.existsSync(full)) return [];
-  return fs.readdirSync(full)
-    .filter((f) => f.endsWith('.json'))
-    .map((f) => {
-      const data = readJSON(path.join(dir, f), null);
-      if (!data || typeof data !== 'object') return null;
-      return Object.assign({ id: f.replace(/\.json$/, '') }, data);
-    })
-    .filter((d) => d && d.published !== false);
+// 讀取「一個檔案裡放很多筆」的清單（後台可以連續編輯、一次儲存）
+// idParts：用來產生每筆資料固定網址的欄位
+function readList(file, idPrefix, idParts) {
+  const raw = readJSON(file, []);
+  const list = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.items) ? raw.items : []);
+  const seen = {};
+  return list
+    .filter((d) => d && typeof d === 'object' && d.published !== false)
+    .map((d) => {
+      let id = idPrefix + '-' + hash(idParts.map((k) => str(d[k])).join('|'));
+      seen[id] = (seen[id] || 0) + 1;
+      if (seen[id] > 1) id += '-' + seen[id];
+      return Object.assign({ id }, d);
+    });
+}
+
+function hash(s) {
+  return require('crypto').createHash('md5').update(s).digest('hex').slice(0, 8);
 }
 
 const arr = (v) => (Array.isArray(v) ? v.filter((x) => x !== null && x !== undefined && x !== '') : []);
+// 字串或陣列都轉成陣列（例如收錄類別可以單選或多選）
+const many = (v) => (Array.isArray(v) ? arr(v) : str(v) ? [str(v)] : []).map(str).filter(Boolean);
 const str = (v) => (v === null || v === undefined ? '' : String(v)).trim();
 
 function esc(v) {
@@ -80,18 +89,18 @@ const settings = readJSON('content/settings.json', {});
 const on = (key) => settings[key] !== false;
 const team = arr(readJSON('content/team.json', []));
 const studentAwards = arr(readJSON('content/student-awards.json', []));
-const pubs = readCollection('content/publications').sort((a, b) => num(b.year) - num(a.year));
+const pubs = readList('content/publications.json', 'p', ['year', 'title']).sort((a, b) => num(b.year) - num(a.year));
 const semOrder = { '第一學期': 1, '第二學期': 2, '暑期': 3 };
-const courses = readCollection('content/courses').sort((a, b) =>
+const courses = readList('content/courses.json', 'c', ['academic_year', 'semester', 'title']).sort((a, b) =>
   num(b.academic_year) - num(a.academic_year) || (semOrder[b.semester] || 0) - (semOrder[a.semester] || 0));
-const projects = readCollection('content/projects').sort((a, b) => num(b.year) - num(a.year));
-const theses = readCollection('content/theses').sort((a, b) => num(b.year) - num(a.year));
+const projects = readList('content/projects.json', 'p', ['year', 'title']).sort((a, b) => num(b.year) - num(a.year));
+const theses = readList('content/theses.json', 't', ['student', 'title_zh']).sort((a, b) => num(b.year) - num(a.year));
 // 日期字串（例如 2024/08/01、2024-8、2024）→ 可排序的數字
 function dateKey(s) {
   const p = str(s).match(/\d+/g) || [];
   return (parseInt(p[0] || 0, 10) * 10000) + (parseInt(p[1] || 0, 10) * 100) + parseInt(p[2] || 0, 10);
 }
-const grants = readCollection('content/grants').sort((a, b) => dateKey(b.start) - dateKey(a.start) || dateKey(b.end) - dateKey(a.end));
+const grants = readList('content/grants.json', 'g', ['title']).sort((a, b) => dateKey(b.start) - dateKey(a.start) || dateKey(b.end) - dateKey(a.end));
 
 // 哪些頁面／區塊要顯示
 const SHOW = {
@@ -105,7 +114,7 @@ const SHOW = {
 SHOW.team = on('show_team') && (SHOW.members || SHOW.projects || SHOW.theses || SHOW.awards);
 
 const NAME = str(profile.name) || '我的網站';
-const TYPE_LABEL = { journal: '期刊論文', conference: '研討會論文', book: '專書／專章', project: '研究計畫' };
+const TYPE_LABEL = { journal: '期刊論文', conference: '研討會論文', book: '專書／專章' };
 
 // ---------- 共用版面 ----------
 const NAV = [
@@ -180,22 +189,28 @@ function rows(items, render) {
   return `<div class="rows">${list.map(render).join('')}</div>`;
 }
 
-function rowItem(date, main, sub) {
-  return `<div class="row"><span class="row-date">${esc(date)}</span><div class="row-main"><strong>${esc(main)}</strong>${sub ? `<span>${esc(sub)}</span>` : ''}</div></div>`;
+function rowItem(date, main, sub, extra) {
+  return `<div class="row"><span class="row-date">${esc(date)}</span><div class="row-main"><strong>${esc(main)}</strong>${sub ? `<span>${esc(sub)}</span>` : ''}${extra ? `<span class="row-extra">${esc(extra)}</span>` : ''}</div></div>`;
 }
+
+// 篩選用的代號：收錄類別可能含空白或符號，轉成安全的代號
+const tagKey = (s) => 'ix-' + str(s).toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
 function pubItem(p) {
   const links = [
     p.pdf ? `<a href="${esc(u(p.pdf))}">PDF</a>` : '',
-    p.doi ? `<a href="${esc(u(p.doi))}">DOI／連結</a>` : '',
+    p.doi ? `<a href="${esc(u(str(p.doi)))}">DOI／連結</a>` : '',
   ].join('');
-  return `<li class="pub" data-type="${esc(p.type || '')}">
+  const indexes = many(p.indexes);
+  const venue = [str(p.venue), str(p.location), str(p.volume_pages)].filter(Boolean).join(', ');
+  const tags = [p.type || 'other'].concat(indexes.map(tagKey)).join(' ');
+  return `<li class="pub" data-tags="${esc(tags)}">
 <span class="pub-year">${esc(p.year)}</span>
 <div class="pub-main">
 <strong class="pub-title">${esc(p.title)}</strong>
 ${p.authors ? `<span class="pub-authors">${esc(p.authors)}</span>` : ''}
-${p.venue ? `<span class="pub-venue">${esc(p.venue)}${p.volume_pages ? ', ' + esc(p.volume_pages) : ''}</span>` : ''}
-<div class="pub-links"><span class="tag">${esc(TYPE_LABEL[p.type] || '其他')}</span>${links}</div>
+${venue ? `<span class="pub-venue">${esc(venue)}</span>` : ''}
+<div class="pub-links"><span class="tag tag-${esc(p.type || 'other')}">${esc(TYPE_LABEL[p.type] || '其他')}</span>${indexes.map((i) => `<span class="tag tag-index">${esc(i)}</span>`).join('')}${links}</div>
 </div>
 </li>`;
 }
@@ -272,7 +287,7 @@ ${recent.length ? `<section class="wrap section" aria-labelledby="pub-h">
 
 <section class="contact" id="contact" aria-labelledby="contact-h">
 <div class="wrap contact-inner">
-<div><h2 id="contact-h">聯絡方式</h2><p>歡迎各位志同道合之夥伴一同在汪洋的知識海共同努力。</p></div>
+<div><h2 id="contact-h">聯絡方式</h2>${paras(profile.contact_message || '歡迎各位志同道合之夥伴一同在汪洋的知識海共同努力。')}</div>
 <div class="contact-list">
 ${profile.email ? `<div>Email：<a href="mailto:${esc(profile.email)}">${esc(profile.email)}</a></div>` : ''}
 ${profile.office ? `<div>研究室：${esc(profile.office)}</div>` : ''}
@@ -286,20 +301,25 @@ ${links ? `<div class="contact-links">${links}</div>` : ''}
 
 // ---------- 關於我 ----------
 function aboutPage() {
+  const skills = arr(profile.skills).filter((g) => many(g.items).length);
+  const skillsHtml = skills.length ? `<div class="rows">${skills.map((g) => `<div class="row"><span class="row-date">${esc(g.category)}</span><div class="row-main"><div class="chips chips-light">${many(g.items).map((s) => `<span class="chip">${esc(s)}</span>`).join('')}</div></div></div>`).join('')}</div>` : '';
+  const certRow = (c) => rowItem(c.year, c.name, c.issuer, c.number ? '證號：' + c.number : '');
   const secs = [
-    ['edu', '學歷', profile.education, (e) => rowItem(e.period, e.degree, e.school)],
+    ['edu', '學歷', profile.education, (e) => rowItem(e.period, e.degree, e.school, e.thesis ? '學位論文：' + e.thesis : '')],
     ['work', '工作經歷', profile.work, (e) => rowItem(e.period, e.title, e.org)],
     ['service', '學術服務經歷', profile.service, (e) => rowItem(e.period, e.role, e.org)],
     ['awards', '獲獎紀錄', profile.awards, (e) => rowItem(e.year, e.name, e.org)],
-  ];
+    ['skills', '專業技能', skills, null, skillsHtml],
+    ['certs', '專業證照', profile.certifications, certRow],
+  ].filter(([, , items]) => arr(items).length);
   const body = `${pageHero('ABOUT', '關於我')}
 <div class="wrap with-toc">
-${toc(secs.map(([id, label]) => [id, label]))}
+${secs.length ? toc(secs.map(([id, label]) => [id, label])) : ''}
 <div class="toc-main">
-${secs.map(([id, label, items, render]) => `<section id="${id}" class="block" aria-labelledby="${id}-h">
+${secs.map(([id, label, items, render, html]) => `<section id="${id}" class="block" aria-labelledby="${id}-h">
 <h2 id="${id}-h">${label}</h2>
-${rows(items, render)}
-</section>`).join('\n')}
+${html || rows(items, render)}
+</section>`).join('\n') || '<p class="empty">尚未新增資料。</p>'}
 </div>
 </div>`;
   write('about/index.html', layout({ title: '關於我', active: 'about', body }));
@@ -307,13 +327,18 @@ ${rows(items, render)}
 
 // ---------- 學術發表 ----------
 function pubsPage() {
-  const filters = [['all', '全部']].concat(Object.entries(TYPE_LABEL).filter(([k]) => pubs.some((p) => p.type === k)));
+  const count = (pred) => pubs.filter(pred).length;
+  const typeFilters = Object.entries(TYPE_LABEL).filter(([k]) => count((p) => p.type === k))
+    .map(([k, l]) => [k, l, count((p) => p.type === k)]);
+  const allIndexes = [...new Set(pubs.flatMap((p) => many(p.indexes)))];
+  const indexFilters = allIndexes.map((i) => [tagKey(i), i, count((p) => many(p.indexes).includes(i))]);
+  const filters = [['all', '全部', pubs.length]].concat(typeFilters, indexFilters);
   const links = [['Google Scholar', profile.scholar], ['ORCID', profile.orcid]].filter(([, h]) => str(h));
   const intro = links.length ? `<p>完整發表紀錄也可在 ${links.map(([l, h]) => `<a href="${esc(u(h))}">${l}</a>`).join(' 與 ')} 查詢。</p>` : '';
   const body = `${pageHero('PUBLICATIONS', '學術發表', intro)}
 <section class="wrap section" aria-label="發表列表">
-${pubs.length > 0 && filters.length > 2 ? `<div class="filters" role="group" aria-label="依類型篩選">
-${filters.map(([k, l], i) => `<button type="button" data-filter="${k}" aria-pressed="${i === 0}">${l}</button>`).join('')}
+${pubs.length > 0 && filters.length > 2 ? `<div class="filters" role="group" aria-label="篩選發表">
+${filters.map(([k, l, n], i) => `<button type="button" data-filter="${esc(k)}" aria-pressed="${i === 0}"${i > typeFilters.length ? ' class="f-index"' : ''}>${esc(l)}<span class="f-count">${n}</span></button>`).join('')}
 </div>` : ''}
 ${pubs.length ? `<ol class="pubs" id="pub-list">${pubs.map(pubItem).join('')}</ol>` : '<p class="empty">尚未新增資料。</p>'}
 </section>`;
@@ -492,10 +517,10 @@ function grantsPage() {
   const body = `${pageHero('RESEARCH PROJECTS', '參與研究計畫')}
 <section class="wrap section" aria-label="研究計畫列表">
 ${grants.length && roles.length > 1 ? `<div class="filters" role="group" aria-label="依擔任角色篩選">
-<button type="button" data-filter="all" aria-pressed="true">全部</button>
-${roles.map((r) => `<button type="button" data-filter="${esc(r)}" aria-pressed="false">${esc(r)}</button>`).join('')}
+<button type="button" data-filter="all" aria-pressed="true">全部<span class="f-count">${grants.length}</span></button>
+${roles.map((r) => `<button type="button" data-filter="r-${hash(r)}" aria-pressed="false">${esc(r)}<span class="f-count">${grants.filter((g) => str(g.role) === r).length}</span></button>`).join('')}
 </div>` : ''}
-${grants.length ? `<ol class="pubs" id="pub-list">${grants.map((g) => `<li class="pub grant" data-type="${esc(g.role)}">
+${grants.length ? `<ol class="pubs" id="pub-list">${grants.map((g) => `<li class="pub grant" data-tags="r-${hash(str(g.role))}">
 <span class="grant-period">${esc(period(g))}</span>
 <div class="pub-main">
 <strong class="pub-title">${esc(g.title)}</strong>

@@ -7,7 +7,10 @@
     btn.addEventListener('click', function () {
       var f = btn.getAttribute('data-filter');
       buttons.forEach(function (b) { b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
-      items.forEach(function (it) { it.hidden = f !== 'all' && it.getAttribute('data-type') !== f; });
+      items.forEach(function (it) {
+        var tags = (it.getAttribute('data-tags') || '').split(' ');
+        it.hidden = f !== 'all' && tags.indexOf(f) === -1;
+      });
     });
   });
 

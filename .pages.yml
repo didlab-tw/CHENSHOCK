@@ -50,6 +50,7 @@ content:
           - { name: period, label: 年份, type: string }
           - { name: degree, label: 學位, type: string, description: 例如 博士 }
           - { name: school, label: 學校／系所, type: string }
+          - { name: thesis, label: 學位論文題目, type: string, description: 選填 }
       - name: work
         label: 工作經歷
         type: object
@@ -83,189 +84,222 @@ content:
           - { name: year, label: 年份, type: string }
           - { name: name, label: 獎項名稱, type: string }
           - { name: org, label: 頒發單位, type: string }
+      - name: skills
+        label: 專業技能（會使用的軟體）
+        description: 依類別分組，每個類別底下可以加很多項
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{category}"
+        fields:
+          - { name: category, label: 類別, type: string, description: 例如 設計與多媒體、程式開發、研究與統計 }
+          - { name: items, label: 軟體／技能, type: string, list: true, description: 每一項一格，例如 Photoshop }
+      - name: certifications
+        label: 專業證照
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{year} {name}"
+        fields:
+          - { name: year, label: 取得年份, type: string }
+          - { name: name, label: 證照名稱, type: string }
+          - { name: issuer, label: 發證單位, type: string }
+          - { name: number, label: 證照字號, type: string, description: 選填，留空就不顯示 }
+      - { name: contact_message, label: 首頁「聯絡方式」的一段話, type: text }
 
   - name: publications
     label: 學術發表
-    type: collection
-    path: content/publications
+    type: file
+    path: content/publications.json
     format: json
-    filename: "{year}{month}{day}-{hour}{minute}{second}.json"
-    view:
-      fields: [title, year, type]
-      primary: title
-      sort: [year, title]
-      default:
-        sort: year
-        order: desc
-      search: [title, authors, venue]
     fields:
-      - { name: published, label: 公開顯示, type: boolean, default: true, description: 取消勾選就是草稿，不會出現在網站上 }
-      - name: type
-        label: 類型
-        type: select
-        required: true
-        options:
-          values:
-            - { name: journal, label: 期刊論文 }
-            - { name: conference, label: 研討會論文 }
-            - { name: book, label: 專書／專章 }
-      - { name: year, label: 年份, type: string, required: true, description: 西元年，例如 2025 }
-      - { name: title, label: 標題, type: string, required: true }
-      - { name: authors, label: 作者, type: string, description: 依論文上的順序，用「、」分隔 }
-      - { name: venue, label: 期刊／研討會／出版社, type: string }
-      - { name: volume_pages, label: 卷期與頁碼, type: string, description: 選填，例如 12(3), 45–67 }
-      - { name: doi, label: DOI 或論文網址, type: string, description: 選填，貼上完整連結 }
-      - { name: pdf, label: PDF 檔案, type: file, description: 選填，若期刊允許公開 }
-      - { name: featured, label: 顯示在首頁「近期發表」, type: boolean, default: false, description: 首頁最多顯示 3 筆 }
+      - name: items
+        label: 學術發表
+        description: 按右下角「＋」新增一筆；可以連續新增或修改好幾筆，全部完成後再按一次「儲存」
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{year}｜{title}"
+        fields:
+            - { name: published, label: 公開顯示, type: boolean, default: true, description: 取消勾選就是草稿，不會出現在網站上 }
+            - name: type
+              label: 類型
+              type: select
+              required: true
+              options:
+                values:
+                  - { name: journal, label: 期刊論文 }
+                  - { name: conference, label: 研討會論文 }
+                  - { name: book, label: 專書／專章 }
+            - name: indexes
+              label: 收錄類別
+              description: 可以複選，網站上會顯示成標籤；沒有就留空
+              type: select
+              options:
+                multiple: true
+                values: [SSCI, SCIE, SCI, ESCI, AHCI, TSSCI, THCI, EI, IEEE, Scopus, ACM]
+            - { name: year, label: 年份, type: string, required: true, description: 西元年，例如 2025 }
+            - { name: title, label: 標題, type: string, required: true }
+            - { name: authors, label: 作者, type: string, description: 依論文上的順序，用「、」分隔 }
+            - { name: venue, label: 期刊／研討會／出版社名稱, type: string }
+            - { name: location, label: 舉辦地點／學校, type: string, description: 研討會用，例如 致理科技大學，臺北 }
+            - { name: volume_pages, label: 卷期與頁碼, type: string, description: 期刊用，例如 12(3), 45–67；研討會沒有就留空 }
+            - { name: doi, label: DOI 或論文網址, type: string, description: 選填，貼上完整連結 }
+            - { name: pdf, label: PDF 檔案, type: file, description: 選填，若期刊允許公開 }
+            - { name: featured, label: 顯示在首頁「近期發表」, type: boolean, default: false, description: 首頁最多顯示 3 筆 }
 
   - name: grants
     label: 參與研究計畫
-    type: collection
-    path: content/grants
+    type: file
+    path: content/grants.json
     format: json
-    filename: "{year}{month}{day}-{hour}{minute}{second}.json"
-    view:
-      fields: [title, start, role]
-      primary: title
-      sort: [start, title]
-      default:
-        sort: start
-        order: desc
-      search: [title, agency, code]
     fields:
-      - { name: published, label: 公開顯示, type: boolean, default: true, description: 取消勾選就是草稿，不會出現在網站上 }
-      - { name: agency, label: 委辦單位, type: string, required: true, description: 例如 國家科學及技術委員會、教育部 }
-      - { name: title, label: 計畫名稱, type: string, required: true }
-      - { name: code, label: 計畫編號, type: string }
-      - { name: start, label: 執行開始, type: string, required: true, description: 例如 2025/08/01，網站會依開始日期由新到舊排序 }
-      - { name: end, label: 執行結束, type: string, description: 例如 2026/07/31 }
-      - name: role
-        label: 擔任角色
-        type: select
-        options:
-          values: [計畫主持人, 共同主持人, 協同主持人, 協同研究人員, 研究人員, 博士後研究員, 兼任助理, 專任助理]
+      - name: items
+        label: 參與研究計畫
+        description: 按右下角「＋」新增一筆；可以連續新增或修改好幾筆，全部完成後再按一次「儲存」
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{start}｜{title}"
+        fields:
+            - { name: published, label: 公開顯示, type: boolean, default: true, description: 取消勾選就是草稿，不會出現在網站上 }
+            - { name: agency, label: 委辦單位, type: string, required: true, description: 例如 國家科學及技術委員會、教育部 }
+            - { name: title, label: 計畫名稱, type: string, required: true }
+            - { name: code, label: 計畫編號, type: string }
+            - { name: start, label: 執行開始, type: string, required: true, description: 例如 2025/08/01，網站會依開始日期由新到舊排序 }
+            - { name: end, label: 執行結束, type: string, description: 例如 2026/07/31 }
+            - name: role
+              label: 擔任角色
+              type: select
+              options:
+                values: [計畫主持人, 共同主持人, 協同主持人, 協同研究人員, 研究人員, 博士後研究員, 兼任助理, 專任助理]
 
   - name: courses
     label: 歷年授課
-    type: collection
-    path: content/courses
+    type: file
+    path: content/courses.json
     format: json
-    filename: "{year}{month}{day}-{hour}{minute}{second}.json"
-    view:
-      fields: [title, academic_year, semester, status]
-      primary: title
-      sort: [academic_year, title]
-      default:
-        sort: academic_year
-        order: desc
     fields:
-      - { name: published, label: 公開顯示, type: boolean, default: true, description: 取消勾選就是草稿 }
-      - { name: title, label: 課程名稱, type: string, required: true }
-      - { name: academic_year, label: 學年度, type: string, required: true, description: 例如 115 }
-      - name: semester
-        label: 學期
-        type: select
-        options:
-          values: [第一學期, 第二學期, 暑期]
-      - name: level
-        label: 學制
-        type: select
-        options:
-          values: [大學部, 研究所, 在職專班]
-      - { name: credits, label: 學分, type: string }
-      - { name: schedule, label: 上課時間, type: string, description: 例如 週三 2–4 節 }
-      - { name: room, label: 教室, type: string }
-      - name: status
-        label: 課程狀態
-        type: select
-        required: true
-        description: 選「已結束」並填入評鑑分數，分數會顯示在課程卡片上
-        options:
-          values: [進行中, 已結束]
-      - { name: description, label: 課程介紹, type: text, description: 兩三句話，顯示在課程頁最上方 }
-      - { name: goals, label: 學習目標, type: string, list: true }
-      - name: grading
-        label: 評分方式
-        type: object
-        list: true
-        fields:
-          - { name: item, label: 項目, type: string }
-          - { name: percent, label: 比例（%）, type: string }
-      - name: weeks
-        label: 週次表
+      - name: items
+        label: 歷年授課
+        description: 按右下角「＋」新增一筆；可以連續新增或修改好幾筆，全部完成後再按一次「儲存」
         type: object
         list:
           collapsible:
             collapsed: true
-            summary: "{week} {topic}"
+            summary: "{academic_year} {semester}｜{title}"
         fields:
-          - { name: week, label: 週次, type: string, description: 例如 第 1 週 }
-          - { name: topic, label: 單元主題, type: string }
-          - { name: activity, label: 課堂活動／任務, type: string }
-      - name: lessons
-        label: 教學內容（每週教學筆記）
-        type: object
-        list:
-          collapsible:
-            collapsed: true
-            summary: "{week} {title}"
-        fields:
-          - { name: week, label: 週次, type: string }
-          - { name: date, label: 日期, type: string }
-          - { name: title, label: 標題, type: string }
-          - { name: summary, label: 內容, type: text, description: 教學重點、方法、學生反應或反思 }
-          - { name: image, label: 照片／投影片截圖, type: image }
-          - name: files
-            label: 附件
-            type: object
-            list: true
-            fields:
-              - { name: label, label: 顯示名稱, type: string, description: 例如 投影片 }
-              - { name: file, label: 檔案, type: file }
-      - name: tasks
-        label: 學生課堂任務
-        type: object
-        list:
-          collapsible:
-            collapsed: true
-            summary: "{name}"
-        fields:
-          - { name: name, label: 任務名稱, type: string }
-          - { name: due, label: 繳交日期, type: string }
-          - { name: description, label: 任務說明, type: text }
-          - { name: format, label: 繳交形式, type: string, description: 例如 個人書面、小組簡報 }
-      - name: works
-        label: 課堂作品精選
-        type: object
-        list:
-          collapsible:
-            collapsed: true
-            summary: "{title}"
-        fields:
-          - { name: title, label: 作品名稱, type: string }
-          - { name: by, label: 學生／小組, type: string }
-          - { name: task, label: 對應任務, type: string }
-          - { name: image, label: 作品圖片, type: image }
-      - name: evaluation
-        label: 課程評鑑（課程結束後填寫）
-        type: object
-        fields:
-          - { name: score, label: 整體評鑑分數, type: string, description: 例如 4.6 }
-          - name: scale
-            label: 滿分
-            type: select
-            options:
-              values: ["5", "6", "100"]
-          - { name: students, label: 修課人數, type: string }
-          - { name: response_rate, label: 填答率（%）, type: string }
-          - name: items
-            label: 各題項分數
-            type: object
-            list: true
-            fields:
-              - { name: name, label: 題項, type: string }
-              - { name: score, label: 分數, type: string }
-          - { name: feedback, label: 學生回饋節錄, type: text, list: true }
+            - { name: published, label: 公開顯示, type: boolean, default: true, description: 取消勾選就是草稿 }
+            - { name: title, label: 課程名稱, type: string, required: true }
+            - { name: academic_year, label: 學年度, type: string, required: true, description: 例如 115 }
+            - name: semester
+              label: 學期
+              type: select
+              options:
+                values: [第一學期, 第二學期, 暑期]
+            - name: level
+              label: 學制
+              type: select
+              options:
+                values: [大學部, 研究所, 在職專班]
+            - { name: credits, label: 學分, type: string }
+            - { name: schedule, label: 上課時間, type: string, description: 例如 週三 2–4 節 }
+            - { name: room, label: 教室, type: string }
+            - name: status
+              label: 課程狀態
+              type: select
+              required: true
+              description: 選「已結束」並填入評鑑分數，分數會顯示在課程卡片上
+              options:
+                values: [進行中, 已結束]
+            - { name: description, label: 課程介紹, type: text, description: 兩三句話，顯示在課程頁最上方 }
+            - { name: goals, label: 學習目標, type: string, list: true }
+            - name: grading
+              label: 評分方式
+              type: object
+              list: true
+              fields:
+                - { name: item, label: 項目, type: string }
+                - { name: percent, label: 比例（%）, type: string }
+            - name: weeks
+              label: 週次表
+              type: object
+              list:
+                collapsible:
+                  collapsed: true
+                  summary: "{week} {topic}"
+              fields:
+                - { name: week, label: 週次, type: string, description: 例如 第 1 週 }
+                - { name: topic, label: 單元主題, type: string }
+                - { name: activity, label: 課堂活動／任務, type: string }
+            - name: lessons
+              label: 教學內容（每週教學筆記）
+              type: object
+              list:
+                collapsible:
+                  collapsed: true
+                  summary: "{week} {title}"
+              fields:
+                - { name: week, label: 週次, type: string }
+                - { name: date, label: 日期, type: string }
+                - { name: title, label: 標題, type: string }
+                - { name: summary, label: 內容, type: text, description: 教學重點、方法、學生反應或反思 }
+                - { name: image, label: 照片／投影片截圖, type: image }
+                - name: files
+                  label: 附件
+                  type: object
+                  list: true
+                  fields:
+                    - { name: label, label: 顯示名稱, type: string, description: 例如 投影片 }
+                    - { name: file, label: 檔案, type: file }
+            - name: tasks
+              label: 學生課堂任務
+              type: object
+              list:
+                collapsible:
+                  collapsed: true
+                  summary: "{name}"
+              fields:
+                - { name: name, label: 任務名稱, type: string }
+                - { name: due, label: 繳交日期, type: string }
+                - { name: description, label: 任務說明, type: text }
+                - { name: format, label: 繳交形式, type: string, description: 例如 個人書面、小組簡報 }
+            - name: works
+              label: 課堂作品精選
+              type: object
+              list:
+                collapsible:
+                  collapsed: true
+                  summary: "{title}"
+              fields:
+                - { name: title, label: 作品名稱, type: string }
+                - { name: by, label: 學生／小組, type: string }
+                - { name: task, label: 對應任務, type: string }
+                - { name: image, label: 作品圖片, type: image }
+            - name: evaluation
+              label: 課程評鑑（課程結束後填寫）
+              type: object
+              fields:
+                - { name: score, label: 整體評鑑分數, type: string, description: 例如 4.6 }
+                - name: scale
+                  label: 滿分
+                  type: select
+                  options:
+                    values: ["5", "6", "100"]
+                - { name: students, label: 修課人數, type: string }
+                - { name: response_rate, label: 填答率（%）, type: string }
+                - name: items
+                  label: 各題項分數
+                  type: object
+                  list: true
+                  fields:
+                    - { name: name, label: 題項, type: string }
+                    - { name: score, label: 分數, type: string }
+                - { name: feedback, label: 學生回饋節錄, type: text, list: true }
 
   - name: outcomes
     label: 學生成果
@@ -273,73 +307,77 @@ content:
     items:
       - name: projects
         label: 大學部專題
-        type: collection
-        path: content/projects
+        type: file
+        path: content/projects.json
         format: json
-        filename: "{year}{month}{day}-{hour}{minute}{second}.json"
-        view:
-          fields: [title, year]
-          primary: title
-          default:
-            sort: year
-            order: desc
         fields:
-          - { name: published, label: 公開顯示, type: boolean, default: true }
-          - { name: year, label: 年份, type: string, required: true }
-          - { name: title, label: 專題名稱, type: string, required: true }
-          - { name: summary, label: 一句話簡介, type: text }
-          - { name: award, label: 獲獎（若有）, type: string }
-          - { name: cover, label: 主視覺／海報圖片, type: image }
-          - name: members
-            label: 組員與分工
+          - name: items
+            label: 大學部專題
+            description: 按右下角「＋」新增一筆；可以連續新增或修改好幾筆，全部完成後再按一次「儲存」
             type: object
-            list: true
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{year}｜{title}"
             fields:
-              - { name: name, label: 姓名, type: string }
-              - { name: role, label: 負責項目, type: string }
-              - { name: photo, label: 照片, type: image }
-          - { name: intro, label: 專題介紹, type: text, description: 研究動機、方法與過程、成果；每段換行 }
-          - { name: gallery, label: 成果照片, type: image, options: { multiple: { max: 12 } } }
-          - { name: poster, label: 專題海報 PDF, type: file }
-          - name: links
-            label: 其他連結
-            type: object
-            list: true
-            fields:
-              - { name: label, label: 顯示名稱, type: string, description: 例如 展示影片 }
-              - { name: url, label: 網址, type: string }
+                - { name: published, label: 公開顯示, type: boolean, default: true }
+                - { name: year, label: 年份, type: string, required: true }
+                - { name: title, label: 專題名稱, type: string, required: true }
+                - { name: summary, label: 一句話簡介, type: text }
+                - { name: award, label: 獲獎（若有）, type: string }
+                - { name: cover, label: 主視覺／海報圖片, type: image }
+                - name: members
+                  label: 組員與分工
+                  type: object
+                  list: true
+                  fields:
+                    - { name: name, label: 姓名, type: string }
+                    - { name: role, label: 負責項目, type: string }
+                    - { name: photo, label: 照片, type: image }
+                - { name: intro, label: 專題介紹, type: text, description: 研究動機、方法與過程、成果；每段換行 }
+                - { name: gallery, label: 成果照片, type: image, options: { multiple: { max: 12 } } }
+                - { name: poster, label: 專題海報 PDF, type: file }
+                - name: links
+                  label: 其他連結
+                  type: object
+                  list: true
+                  fields:
+                    - { name: label, label: 顯示名稱, type: string, description: 例如 展示影片 }
+                    - { name: url, label: 網址, type: string }
 
       - name: theses
         label: 碩博士論文
-        type: collection
-        path: content/theses
+        type: file
+        path: content/theses.json
         format: json
-        filename: "{year}{month}{day}-{hour}{minute}{second}.json"
-        view:
-          fields: [title_zh, student, degree, year]
-          primary: title_zh
-          default:
-            sort: year
-            order: desc
         fields:
-          - { name: published, label: 公開顯示, type: boolean, default: true }
-          - name: degree
-            label: 學位
-            type: select
-            required: true
-            options:
-              values: [碩士, 博士]
-          - { name: year, label: 畢業學年度, type: string, required: true }
-          - { name: student, label: 研究生姓名, type: string, required: true }
-          - { name: title_zh, label: 中文論文題目, type: string, required: true }
-          - { name: title_en, label: 英文論文題目, type: string }
-          - { name: department, label: 系所, type: string }
-          - { name: advisor, label: 指導教授, type: string, description: 留空則顯示你的姓名 }
-          - { name: abstract_zh, label: 中文摘要, type: text }
-          - { name: keywords_zh, label: 中文關鍵詞, type: string, description: 用「、」分隔 }
-          - { name: abstract_en, label: 英文摘要 Abstract, type: text }
-          - { name: keywords_en, label: 英文關鍵詞 Keywords, type: string }
-          - { name: ndltd_url, label: 臺灣博碩士論文知識加值系統連結, type: string, description: 在系統上找到論文後，複製網址貼上 }
+          - name: items
+            label: 碩博士論文
+            description: 按右下角「＋」新增一筆；可以連續新增或修改好幾筆，全部完成後再按一次「儲存」
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{year} {degree}｜{student}"
+            fields:
+                - { name: published, label: 公開顯示, type: boolean, default: true }
+                - name: degree
+                  label: 學位
+                  type: select
+                  required: true
+                  options:
+                    values: [碩士, 博士]
+                - { name: year, label: 畢業學年度, type: string, required: true }
+                - { name: student, label: 研究生姓名, type: string, required: true }
+                - { name: title_zh, label: 中文論文題目, type: string, required: true }
+                - { name: title_en, label: 英文論文題目, type: string }
+                - { name: department, label: 系所, type: string }
+                - { name: advisor, label: 指導教授, type: string, description: 留空則顯示你的姓名 }
+                - { name: abstract_zh, label: 中文摘要, type: text }
+                - { name: keywords_zh, label: 中文關鍵詞, type: string, description: 用「、」分隔 }
+                - { name: abstract_en, label: 英文摘要 Abstract, type: text }
+                - { name: keywords_en, label: 英文關鍵詞 Keywords, type: string }
+                - { name: ndltd_url, label: 臺灣博碩士論文知識加值系統連結, type: string, description: 在系統上找到論文後，複製網址貼上 }
 
       - name: student_awards
         label: 學生得獎紀錄
