@@ -1,12 +1,11 @@
 {
   "published": true,
   "type": "journal",
-  "year": "2025",
-  "title": "[範例：論文標題，請在後台修改或刪除]",
-  "authors": "[你的姓名]、[共同作者]",
-  "venue": "[期刊名稱]",
-  "volume_pages": "[卷(期)], [頁碼]",
-  "doi": "",
-  "pdf": "",
+  "year": "2026",
+  "title": "Investigating the effectiveness of VR technology on hands-on STEAM learning activities for junior high school students",
+  "authors": "Hsiao, H. S., Chen, J. H., Tsai, H. W., & Chung, G. H.",
+  "venue": "Interactive Learning Environments",
+  "volume_pages": "34(6),  3820-3838",
+  "doi": "https://doi.org/10.1080/10494820.2025.2580984 ",
   "featured": true
 }
