@@ -1,4 +1,5 @@
 {
+  "theme": "classic",
   "show_grants": true,
   "show_courses": true,
   "show_team": true,

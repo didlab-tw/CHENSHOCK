@@ -11,6 +11,14 @@ content:
     path: content/settings.json
     format: json
     fields:
+      - name: theme
+        label: 網站風格
+        description: 沒有選用的那一套會放在「網址/preview/」，可以先預覽比較
+        type: select
+        options:
+          values:
+            - { name: classic, label: 經典深藍 }
+            - { name: bright, label: 清爽明亮 }
       - { name: show_grants, label: 顯示「研究計畫」頁, type: boolean, default: true }
       - { name: show_courses, label: 顯示「歷年授課」頁, type: boolean, default: true }
       - { name: show_team, label: 顯示「研究團隊」頁, type: boolean, default: true, description: 關閉後，下面四個區塊也都不會出現 }

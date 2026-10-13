@@ -5,7 +5,9 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = __dirname;
-const OUT = path.join(ROOT, '_site');
+// PREVIEW=1 時是「另一套風格」的預覽版，輸出到 _site/preview/
+const IS_PREVIEW = process.env.PREVIEW === '1';
+const OUT = process.env.OUT_DIR ? path.resolve(process.env.OUT_DIR) : path.join(ROOT, '_site');
 const BASE = (process.env.BASE_PATH || '').replace(/\/+$/, '');
 
 // ---------- 工具 ----------
@@ -87,6 +89,10 @@ const profile = readJSON('content/profile.json', {});
 // 網站設定：每個區塊的開關（後台「網站設定」）。沒設定的一律視為開啟。
 const settings = readJSON('content/settings.json', {});
 const on = (key) => settings[key] !== false;
+// 網站風格：classic＝經典深藍、bright＝清爽明亮
+const THEMES = { classic: '經典深藍', bright: '清爽明亮' };
+const LIVE_THEME = THEMES[settings.theme] ? settings.theme : 'classic';
+const THEME = IS_PREVIEW && THEMES[process.env.THEME] ? process.env.THEME : LIVE_THEME;
 const team = arr(readJSON('content/team.json', []));
 const studentAwards = arr(readJSON('content/student-awards.json', []));
 const pubs = readList('content/publications.json', 'p', ['year', 'title']).sort((a, b) => num(b.year) - num(a.year));
@@ -137,13 +143,14 @@ function layout({ title, active, body, description }) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${pageTitle}</title>
-<meta name="description" content="${desc}">
+<meta name="description" content="${desc}">${IS_PREVIEW ? '\n<meta name="robots" content="noindex">' : ''}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
-<link rel="stylesheet" href="${u('/assets/style.css')}">
+<link rel="stylesheet" href="${u('/assets/style.css')}">${THEME !== 'classic' ? `\n<link rel="stylesheet" href="${u('/assets/theme-' + THEME + '.css')}">` : ''}
 </head>
-<body>
+<body class="theme-${THEME}">
+${IS_PREVIEW ? `<div class="preview-bar" role="note">風格預覽：「${THEMES[THEME]}」。要正式使用，到後台「網站設定」把「網站風格」改成「${THEMES[THEME]}」。<a href="${esc(BASE.replace(/\/preview$/, '') + '/')}">回到目前的網站</a></div>` : ''}
 <a class="skip" href="#main">跳到主要內容</a>
 <header class="topbar">
 <nav class="wrap topnav" aria-label="主選單">
@@ -591,3 +598,13 @@ notFound();
 fs.writeFileSync(path.join(OUT, '.nojekyll'), '');
 console.log(`✓ 網站產生完成：${pubs.length} 篇發表、${grants.length} 個研究計畫、${courses.length} 門課、${projects.length} 個專題、${theses.length} 篇論文`);
 console.log('  顯示中的區塊：' + Object.keys(SHOW).filter((k) => SHOW[k]).join('、'));
+console.log('  風格：' + THEMES[THEME] + (IS_PREVIEW ? '（預覽版）' : ''));
+
+// 同時產生「另一套風格」的預覽版：<網址>/preview/
+if (!IS_PREVIEW) {
+  const other = Object.keys(THEMES).find((t) => t !== LIVE_THEME);
+  require('child_process').execFileSync(process.execPath, [__filename], {
+    stdio: 'inherit',
+    env: Object.assign({}, process.env, { PREVIEW: '1', THEME: other, OUT_DIR: path.join(OUT, 'preview'), BASE_PATH: BASE + '/preview' }),
+  });
+}

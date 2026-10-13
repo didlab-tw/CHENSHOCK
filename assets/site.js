@@ -19,6 +19,18 @@
     });
   });
 
+  // 清爽明亮風格：區塊捲進畫面時淡入
+  if (document.body.classList.contains('theme-bright') && 'IntersectionObserver' in window &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var revealIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); revealIO.unobserve(e.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.hero-text, .hero-photo, .section-head, .block > h2, .card, .pub, .row, .list-link, .member')
+      .forEach(function (el) { el.classList.add('reveal'); revealIO.observe(el); });
+  }
+
   // 側邊目錄
   var links = document.querySelectorAll('.toc a[href^="#"]');
   if (!links.length || !('IntersectionObserver' in window)) return;

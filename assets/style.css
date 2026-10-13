@@ -268,3 +268,7 @@ blockquote { margin: 0; padding: 16px 20px; border-radius: 12px; background: var
   .grant-period { flex-basis: 100%; font-size: 14px; }
   .grant-code { display: block; margin-left: 0; }
 }
+
+/* 風格預覽版上方的提示列 */
+.preview-bar { background: #FFF4CE; color: #4A3B00; font-size: 14px; padding: 10px 16px; text-align: center; border-bottom: 1px solid #E8D58A; }
+.preview-bar a { color: #4A3B00; font-weight: 700; margin-left: 8px; }
